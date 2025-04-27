@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service
+  labels:
+    app: admin-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: admin-service
+  template:
+    metadata:
+      labels:
+        app: admin-service
+    spec:
+      containers:
+      - name: admin-service
+        image: admin-service:latest
+        ports:
+        - containerPort: 3006
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3006"
+        - name: MONGODB_URI
+          value: "mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-admin"
+        - name: JWT_SECRET
+          value: "fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:3001"
+        - name: ORDER_SERVICE_URL
+          value: "http://order-service:3003"
+        - name: RESTAURANT_SERVICE_URL
+          value: "http://restaurant-service:3002"
+        - name: DELIVERY_SERVICE_URL
+          value: "http://delivery-service:3005"
+

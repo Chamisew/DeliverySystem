@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-service
+  labels:
+    app: restaurant-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: restaurant-service
+  template:
+    metadata:
+      labels:
+        app: restaurant-service
+    spec:
+      containers:
+      - name: restaurant-service
+        image: restaurant-service:latest
+        ports:
+        - containerPort: 3002
+        env:
+        - name: PORT
+          value: "3002"
+        - name: MONGODB_URI
+          value: "mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-restaurant?retryWrites=true&w=majority&appName=Cluster0"
+        - name: JWT_SECRET
+          value: "fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:3001"

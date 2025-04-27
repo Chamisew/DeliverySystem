@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Restaurant API Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    button { padding: 10px; margin: 5px; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Restaurant API Test</h1>
+  
+  <button onclick="testMeEndpoint()">Test /me Endpoint</button>
+  <button onclick="testStatsEndpoint()">Test /stats Endpoint</button>
+  
+  <h2>Results:</h2>
+  <pre id="results">Results will appear here...</pre>
+  
+  <script>
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ZlMjkwNTY2YThlMDJhNmRkMGNiMTgiLCJyb2xlIjoicmVzdGF1cmFudCIsImlhdCI6MTc0NDcxMzk5MywiZXhwIjoxNzQ0ODAwMzkzfQ.PGqFYUdkxWLoemXt6bY4iylz9F9e7RZh7yC8wezQ7tY';
+    const baseURL = 'http://localhost:3002/api';
+    
+    async function testMeEndpoint() {
+      try {
+        document.getElementById('results').textContent = 'Loading...';
+        const response = await fetch(`${baseURL}/restaurants/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await response.json();
+        document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        document.getElementById('results').textContent = `Error: ${error.message}`;
+      }
+    }
+    
+    async function testStatsEndpoint() {
+      try {
+        document.getElementById('results').textContent = 'Loading...';
+        const response = await fetch(`${baseURL}/restaurants/stats`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await response.json();
+        document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        document.getElementById('results').textContent = `Error: ${error.message}`;
+      }
+    }
+  </script>
+</body>
+</html> 

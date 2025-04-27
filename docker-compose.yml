@@ -1,0 +1,188 @@
+services:
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_API_URL=http://auth-service:3001
+      - REACT_APP_AUTH_API_URL=http://auth-service:3001
+      - REACT_APP_RESTAURANT_API_URL=http://restaurant-service:3002
+      - REACT_APP_ORDER_API_URL=http://order-service:3003
+      - REACT_APP_DELIVERY_API_URL=http://delivery-service:3004
+      - REACT_APP_PAYMENT_API_URL=http://payment-service:3005
+      - REACT_APP_ADMIN_API_URL=http://admin-service:3006
+    depends_on:
+      - auth-service
+      - restaurant-service
+      - order-service
+      - payment-service
+      - delivery-service
+      - notification-service
+      - admin-service
+    networks:
+      - food-delivery-network
+
+  # Authentication Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGODB_URI=mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-auth?retryWrites=true&w=majority
+      - JWT_SECRET=fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb
+      - EMAIL_USER=wimalarathnasammani@gmail.com
+      - EMAIL_PASS=.........
+    volumes:
+      - ./services/auth-service/models:/app/models
+    networks:
+      - food-delivery-network
+
+  # Restaurant Service
+  restaurant-service:
+    build:
+      context: ./services/restaurant-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MONGODB_URI=mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-restaurant?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET=fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb
+      - AUTH_SERVICE_URL=http://auth-service:3001
+    volumes:
+      - ./services/restaurant-service/models:/app/models
+    depends_on:
+      - auth-service
+    networks:
+      - food-delivery-network
+
+  # Order Service
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - MONGODB_URI=mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-orders
+      - JWT_SECRET=fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - RESTAURANT_SERVICE_URL=http://restaurant-service:3002
+      - PAYMENT_SERVICE_URL=http://payment-service:3005
+      - TWILIO_ACCOUNT_SID=.........
+      - TWILIO_AUTH_TOKEN=..........
+      - TWILIO_PHONE_NUMBER=+12317078538
+    volumes:
+      - ./services/order-service/models:/app/models
+      - ./services/auth-service/models:/app/auth-models
+      - ./services/restaurant-service/models:/app/restaurant-models
+    depends_on:
+      - auth-service
+      - restaurant-service
+    networks:
+      - food-delivery-network
+
+  # Payment Service
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - MONGODB_URI=mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-payments
+      - JWT_SECRET=fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - ORDER_SERVICE_URL=http://order-service:3003
+      - STRIPE_SECRET_KEY=........
+      - STRIPE_WEBHOOK_SECRET=.......
+    volumes:
+      - ./services/payment-service/models:/app/models
+    depends_on:
+      - auth-service
+      - order-service
+    networks:
+      - food-delivery-network
+
+  # Delivery Service
+  delivery-service:
+    build:
+      context: ./services/delivery-service
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - MONGODB_URI=mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-delivery
+      - JWT_SECRET=fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - ORDER_SERVICE_URL=http://order-service:3003
+      - TWILIO_ACCOUNT_SID=........
+      - TWILIO_AUTH_TOKEN=............
+      - TWILIO_PHONE_NUMBER=+12317078538
+    volumes:
+      - ./services/delivery-service/models:/app/models
+    depends_on:
+      - auth-service
+      - order-service
+    networks:
+      - food-delivery-network
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "3007:3007"
+    environment:
+      - PORT=3007
+      - MONGODB_URI=mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-notifications
+      - JWT_SECRET=fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb
+      - AUTH_SERVICE_URL=http://auth-service:3001
+    volumes:
+      - ./services/notification-service/models:/app/models
+    depends_on:
+      - auth-service
+    networks:
+      - food-delivery-network
+
+  # Admin Service
+  admin-service:
+    build:
+      context: ./services/admin-service
+      dockerfile: Dockerfile
+    ports:
+      - "3006:3006"
+    environment:
+      - PORT=3006
+      - MONGODB_URI=mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-admin
+      - JWT_SECRET=fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - ORDER_SERVICE_URL=http://order-service:3003
+      - RESTAURANT_SERVICE_URL=http://restaurant-service:3002
+      - DELIVERY_SERVICE_URL=http://delivery-service:3005
+    volumes:
+      - ./services/admin-service/models:/app/models
+    depends_on:
+      - auth-service
+      - order-service
+      - restaurant-service
+      - delivery-service
+    networks:
+      - food-delivery-network
+
+networks:
+  food-delivery-network:
+    driver: bridge
+
+volumes:
+  mongodb_data: 

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-service
+  labels:
+    app: delivery-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: delivery-service
+  template:
+    metadata:
+      labels:
+        app: delivery-service
+    spec:
+      containers:
+      - name: delivery-service
+        image: delivery-service:latest
+        ports:
+        - containerPort: 3004
+        env:
+        - name: PORT
+          value: "3004"
+        - name: MONGODB_URI
+          value: "mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-delivery"
+        - name: JWT_SECRET
+          value: "fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:3001"
+        - name: ORDER_SERVICE_URL
+          value: "http://order-service:3003"
+        - name: TWILIO_ACCOUNT_SID
+          value: "......"
+        - name: TWILIO_AUTH_TOKEN
+          value: "......"
+        - name: TWILIO_PHONE_NUMBER
+          value: "+12317078538"

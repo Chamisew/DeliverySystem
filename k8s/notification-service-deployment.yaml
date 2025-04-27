@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  labels:
+    app: notification-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+      - name: notification-service
+        image: notification-service:latest
+        ports:
+        - containerPort: 3007
+        env:
+        - name: PORT
+          value: "3007"
+        - name: MONGODB_URI
+          value: "mongodb+srv://admin:XACQ5K3xiyWoPbUG@cluster0.1jec4sq.mongodb.net/food-delivery-notifications"
+        - name: JWT_SECRET
+          value: "fbae1a92be4b7861aae60b42d9b8564ac441aa660f2fa10d072b9623173f72fa6f9e9d9843f9db4a5f071a8209f3e227d7d0c27630f69ba676abf4740e8cf0bb"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:3001"
